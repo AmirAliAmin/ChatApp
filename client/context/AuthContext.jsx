@@ -21,13 +21,41 @@ export const AuthProvider = ({children})=>{
            if (data.success) {
             setAuthUser(data.user)
             connectSocket(data.user)
-            
            }
         } catch (error) {
-            toast.error(error.message)
-            
+            toast.error(error.message)   
         }
+    }
 
+    //login  function to handle user  authentication and socket connection
+    const login = async (state, credentials) => {
+        try {
+            const {data} = await axios.post(`/api/auth/${state}`, credentials);
+            if (data.success) {
+                setAuthUser(data.userData);
+                connectSocket(data.userData);
+                axios.defaults.headers.common["token"] = data.token;
+                setToken(data.token);
+                localStorage.setItem("token",data.token);
+                toast.success(data.message)
+            }else{
+                toast.error(data.message)
+            }
+        } catch (error) {
+            toast.error(error.message)
+        }
+        
+    }
+
+    //logout the function to handle user logout and socket discoonected
+    const logout = async () => {
+        localStorage.removeItem("token");
+        setToken(null);
+        setAuthUser(null);
+        setOnlineUser([]);
+        axios.defaults.headers.common["token"] = null;
+        toast.success("Logged out Successfully")
+        socket.disconnected();   
     }
 
     //connect socket function handle socket connection and online user updates
