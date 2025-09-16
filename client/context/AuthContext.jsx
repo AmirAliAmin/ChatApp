@@ -11,7 +11,7 @@ export const AuthContext = createContext();
 export const AuthProvider = ({children})=>{
     const [token , setToken] = useState(localStorage.getItem("token"));
     const [authUser,setAuthUser] = useState(null);
-    const [onlineUser,setOnlineUser] = useState([]);
+    const [onlineUsers,setonlineUsers] = useState([]);
     const [socket,setSocket] = useState(null);
 
     //check id user is authenticated and if so, set the user data and connect the socket
@@ -52,14 +52,32 @@ export const AuthProvider = ({children})=>{
         localStorage.removeItem("token");
         setToken(null);
         setAuthUser(null);
-        setOnlineUser([]);
+        setonlineUsers([]);
         axios.defaults.headers.common["token"] = null;
         toast.success("Logged out Successfully")
-        socket.disconnected();   
+        socket?.disconnect();   
+    }
+
+    //update profile function to handle user profile
+    const updateProfile = async (body) => {
+        try {
+            const {data} = await axios.put("/api/auth/update-profile", body)
+        if (data.success) {
+            setAuthUser(data.user);
+            toast.success("Profile updated Successfully")
+             return { success: true, user: data.user };
+        }else{
+             toast.error(data.message || "Failed to update profile");
+      return { success: false };
+        }
+        } catch (error) {
+              toast.error(error.response?.data?.message || error.message);
+    return { success: false };
+        }
     }
 
     //connect socket function handle socket connection and online user updates
-    const connectSocket = ()=>{ 
+    const connectSocket = (userData)=>{ 
         if (!userData || socket?.connected) return;
         const newSocket = io(backendUrl,{
             query:{
@@ -68,8 +86,8 @@ export const AuthProvider = ({children})=>{
         });
         newSocket.connect();
         setSocket(newSocket);
-        newSocket.on("getOnlineUsers" ,(userIds)=>{
-            setOnlineUser(userIds)
+        newSocket.on("getonlineUserss" ,(userIds)=>{
+            setonlineUsers(userIds)
 
         })
 
@@ -85,8 +103,11 @@ export const AuthProvider = ({children})=>{
     const value ={
         axios,
         authUser,
-        onlineUser,
+        onlineUsers,
         socket,
+        login,
+        logout,
+        updateProfile
 
     }
     return(

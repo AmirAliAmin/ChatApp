@@ -1,18 +1,36 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { useState } from 'react';
 import {useNavigate} from 'react-router-dom'
 import assets from '../assets/assets';
+import { AuthContext } from '../../context/AuthContext';
 
 export default function ProfilePage() {
+  const {authUser, updateProfile} = useContext(AuthContext)
+
   const [selectedImage, setSelectedImage] = useState(null);
   const navigate = useNavigate();
-  const [name, setName] = useState("Amir Ali Amin");
-  const [bio, setBio] = useState("Hi EveryOne, I am Using Chat App")
-  const handleSubmit = (e)=>{
-    e.preventDefault();
-    navigate('/')
+  const [name, setName] = useState(authUser?.fullName|| "");
+  const [bio, setBio] = useState(authUser?.bio ||"");
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
+  let body = { fullName: name, bio };
+
+  if (selectedImage) {
+    const reader = new FileReader();
+    reader.readAsDataURL(selectedImage);
+    reader.onload = async () => {
+      body.profilePic = reader.result;
+      const res = await updateProfile(body);
+      if (res.success) navigate("/");
+    };
+  } else {
+    const res = await updateProfile(body);
+    if (res.success) navigate("/");
   }
+};
+
+
   
 
   return (
@@ -29,7 +47,7 @@ export default function ProfilePage() {
           <textarea onChange={(e)=>setBio(e.target.value)} value={bio} placeholder='Write Profile Bio' required rows={4} className='p-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500'></textarea>
           <button type='submit' className='bg-gradient-to-r from-purple-400 to-violet-600 text-white p-2 rounded-full text-lg cursor-pointer'>Save</button>
         </form>
-        <img src={assets.logo_icon} alt="" className='max-w-44 aspect-square rounded-full mx-10 max-sm:mt-10 '/>
+        <img src={authUser?.profilePic ||assets.logo_icon} alt="" className={`max-w-44 aspect-square rounded-full mx-10 max-sm:mt-10  ${selectedImage && 'rounded-full'}`}/>
       </div>
     
     </div>

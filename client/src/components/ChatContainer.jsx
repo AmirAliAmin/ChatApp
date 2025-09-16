@@ -13,7 +13,7 @@ export default function ChatContainer({selectedUser, setSelectedUser}) {
 
   },[])
   return selectedUser?(
-    <div className='h-full overflow-scroll relative backdrop-blur-lg'>
+    <div className='h-full sm:h-screen overflow-scroll relative backdrop-blur-lg'>
       {/* Header */}
       <div className='flex items-center gap-3 py-3 mx-4 border-b border-stone-500'>
         <img src={assets.profile_martin} alt="" className='w-8 rounded-full' />
