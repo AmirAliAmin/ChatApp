@@ -9,7 +9,7 @@ export const ChatProvider = ({children})=>{
     
     const [message, setMessage] = useState([])
     const [users, setUsers] = useState([])
-    const [selectedUser, setselectedUser] = useState(null)
+    const [selectedUser, setSelectedUser] = useState(null)
     const [unSeenMessage, setUnSeenMessage] = useState({})
     
     const {socket ,axios} =useContext(AuthContext);
@@ -94,10 +94,10 @@ export const ChatProvider = ({children})=>{
         getUser,
         setMessage,
         sendMessage,
-        setselectedUser,
+        setSelectedUser,
         unSeenMessage,
-        setUnSeenMessage
-
+        setUnSeenMessage,
+        getMessage,
     }
     return(
         <ChatContext.Provider value={value}>
