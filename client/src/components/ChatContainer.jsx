@@ -52,7 +52,7 @@ export default function ChatContainer() {
 
   },[message])
   return selectedUser?(
-    <div className='h-[90%] sm:h-full overflow-scroll relative backdrop-blur-lg'>
+    <div className='h-[95%] sm:h-full overflow-scroll relative backdrop-blur-lg'>
       {/* Header */}
       <div className='flex fixed w-[100%] bg-black items-center gap-3 py-3 px-3  border-b border-stone-500'>
         <img src={selectedUser.profilePic || assets.avatar_icon} alt="" className='w-8 rounded-full' />
